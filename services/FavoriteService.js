@@ -9,7 +9,9 @@ class FavoriteService {
 
 	async getProduct(idProduct) {
 		let product;
-		await fetch(`http://localhost:4000/api/courses/${idProduct}`)
+		await fetch(
+			`https://ip-accounts.herokuapp.com/api/courses/${idProduct}`,
+		)
 			.then((response) => response.json())
 			.then(async function (data) {
 				product = data.data[0];
@@ -22,11 +24,47 @@ class FavoriteService {
 
 	async deleteFromFavoriteList(payload, idProduct) {
 		let storedItem;
-		const { userId } = payload;
-		const userExists = await this.db.Favorite.findOne({
-			userId,
-		});
+		const { token } = payload;
+		let tokenIdUser;
+		let okToken = true;
+		if (payload.token) {
+			const bearer = `Bearer ${token}`;
+			await fetch(
+				'https://ip-accounts.herokuapp.com/api/users/auth',
+				{
+					method: 'GET',
+					headers: {
+						Authorization: bearer,
+					},
+				},
+			)
+				.then((res) => {
+					return res.json();
+				})
+				.then((response) => {
+					if (response.success) {
+						tokenIdUser = response.data.user[0]._id;
+					} else {
+						okToken = false;
+					}
+				})
+				.catch((error) => {
+					Logger.error(error);
+				});
+		} else {
+			okToken = false;
+		}
 
+		if (!okToken) {
+			return {
+				success: false,
+				error: { message: 'User is not logged.' },
+			};
+		}
+
+		const userExists = await this.db.Favorite.findOne({
+			userId: tokenIdUser,
+		});
 		if (userExists) {
 			storedItem = userExists.items.find(function (elem) {
 				return elem.id == idProduct;
@@ -37,24 +75,60 @@ class FavoriteService {
 					1,
 				);
 				userExists.save();
-				console.log(userExists);
 				return { success: true, data: { userExists } };
 			}
 			return {
 				success: false,
-				mesaj: 'Produsul nu exista in lista de favorite',
+				error: {
+					message:
+						'Product does not exist in favorites list.',
+				},
 			};
 		}
 		return {
 			success: false,
-			mesaj: 'Utilizatorul nu exista',
+			error: { message: 'User does not exist.' },
 		};
 	}
 
-	async deleteAllFromFavoriteList(idUser) {
+	async deleteAllFromFavoriteList(token) {
+		let tokenIdUser;
+		let okToken = true;
+		if (token) {
+			const bearer = `Bearer ${token}`;
+			await fetch(
+				'https://ip-accounts.herokuapp.com/api/users/auth',
+				{
+					method: 'GET',
+					headers: {
+						Authorization: bearer,
+					},
+				},
+			)
+				.then((res) => {
+					return res.json();
+				})
+				.then((response) => {
+					if (response.success) {
+						tokenIdUser = response.data.user[0]._id;
+					} else {
+						okToken = false;
+					}
+				})
+				.catch((error) => {
+					Logger.error(error);
+				});
+		} else {
+			okToken = false;
+		}
+
 		try {
+			if (!okToken) {
+				throw new Error('The user is not logged in.');
+			}
+
 			const cart = await this.db.Favorite.deleteOne({
-				userId: idUser,
+				userId: tokenIdUser,
 			});
 
 			return { success: true, data: { cart } };
@@ -69,19 +143,52 @@ class FavoriteService {
 
 	async addInFavoriteList(payload, idProduct) {
 		let storedItem;
-		const { userId } = payload;
+		const { token } = payload;
+		let tokenIdUser;
+		let okToken = true;
+		if (payload.token) {
+			const bearer = `Bearer ${token}`;
+			await fetch(
+				'https://ip-accounts.herokuapp.com/api/users/auth',
+				{
+					method: 'GET',
+					headers: {
+						Authorization: bearer,
+					},
+				},
+			)
+				.then((res) => {
+					return res.json();
+				})
+				.then((response) => {
+					if (response.success) {
+						tokenIdUser = response.data.user[0]._id;
+					} else {
+						okToken = false;
+					}
+				})
+				.catch((error) => {
+					Logger.error(error);
+				});
+		} else {
+			okToken = false;
+		}
+
 		const items = [];
 		const list = {
-			userId,
+			userId: tokenIdUser,
 			items,
 		};
 
 		const storedProduct = await this.getProduct(idProduct);
 
 		try {
+			if (!okToken) {
+				throw new Error('The user is not logged in.');
+			}
 			if (storedProduct) {
 				const userExists = await this.db.Favorite.findOne({
-					userId,
+					userId: tokenIdUser,
 				});
 				if (userExists) {
 					storedItem = userExists.items.find(function (
@@ -123,6 +230,7 @@ class FavoriteService {
 					},
 				};
 				list.items.push(storedItem);
+				console.log(list);
 				const favorites = new this.db.Favorite(list);
 				favorites.save();
 				return { success: true, data: { favorites } };
@@ -152,10 +260,44 @@ class FavoriteService {
 		}
 	}
 
-	async getFavoriteProducts(idUser) {
+	async getFavoriteProducts(token) {
+		let tokenIdUser;
+		let okToken = true;
+		if (token) {
+			const bearer = `Bearer ${token}`;
+			await fetch(
+				'https://ip-accounts.herokuapp.com/api/users/auth',
+				{
+					method: 'GET',
+					headers: {
+						Authorization: bearer,
+					},
+				},
+			)
+				.then((res) => {
+					return res.json();
+				})
+				.then((response) => {
+					if (response.success) {
+						tokenIdUser = response.data.user[0]._id;
+					} else {
+						okToken = false;
+					}
+				})
+				.catch((error) => {
+					Logger.error(error);
+				});
+		} else {
+			okToken = false;
+		}
+
 		try {
+			if (!okToken) {
+				throw new Error('The user is not logged in.');
+			}
+
 			const favorites = await this.db.Favorite.find({
-				userId: idUser,
+				userId: tokenIdUser,
 			});
 
 			return { success: true, data: { favorites } };

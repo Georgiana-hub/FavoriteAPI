@@ -25,7 +25,7 @@ Get the all user's favorite foods from the db.
 -   400 - BAD REQUEST
 
 **Usage example**:  
- `localhost:3101/api/v1/favorites`
+ `http://favoriteip.herokuapp.com/api/v1/favorites`
 
 **Returned data example**:
 
@@ -92,7 +92,7 @@ Get a specific list of favorite foods by an userId
 -   400 - BAD REQUEST
 
 **Usage example**:  
- `localhost:3101/api/v1/favorites/5eb16fdf4afbf654966cb68d`
+ `http://favoriteip.herokuapp.com/api/v1/favorites/5eb16fdf4afbf654966cb68d`
 
 **Returned data example**:
 
@@ -153,7 +153,7 @@ Post a favorite food in a list for an user to Favorites Database
 -   400 - BAD REQUEST
 
 **Usage example**:  
- `localhost:3101/api/v1/favorites/add-product/5eb173d3d6fb9132c43218a2`
+ `http://favoriteip.herokuapp.com/api/v1/favorites/add-product/5eb173d3d6fb9132c43218a2`
 
 **Returned data example**:
 
@@ -212,7 +212,7 @@ Delete a favorite product from an user's list from Favorite database
 -   400 - BAD REQUEST
 
 **Usage example**:  
- `localhost:3101/api/v1/favorites/delete-product/5eb173d3d6fb9132c43218a2`
+ `http://favoriteip.herokuapp.com/api/v1/favorites/delete-product/5eb173d3d6fb9132c43218a2`
 
 ## /api/v1/favorites/:idUser
 
@@ -226,7 +226,7 @@ Delete an user's list of favorite products
 -   400 - BAD REQUEST
 
 **Usage example**:  
- `localhost:3101/api/v1/favorites/5eb16fdf4afbf654966cb68d`
+ `http://favoriteip.herokuapp.com/api/v1/favorites/5eb16fdf4afbf654966cb68d`
 
 ## /api/v1/favorites/all
 
@@ -240,4 +240,4 @@ Delete all favorite products lists from Favorite database
 -   400 - BAD REQUEST
 
 **Usage example**:  
- `localhost:3101/api/v1/favorites/all/`
+ `http://favoriteip.herokuapp.com/api/v1/favorites/all/`

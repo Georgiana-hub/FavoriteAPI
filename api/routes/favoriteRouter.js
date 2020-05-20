@@ -15,9 +15,9 @@ router.get('/', async (req, res) => {
 	res.status(statusCode).json(result);
 });
 
-router.get('/:idUser', async (req, res) => {
+router.get('/user', async (req, res) => {
 	const result = await favoriteService.getFavoriteProducts(
-		req.params.idUser,
+		req.query.token,
 	);
 	const statusCode = result.success
 		? statusCodes.OK
@@ -58,20 +58,16 @@ router.delete(
 	},
 );
 
-router.delete(
-	'/:idUser',
-	celebrate({ body: favoriteValidationSchema }),
-	async function (req, res) {
-		const result = await favoriteService.deleteAllFromFavoriteList(
-			req.params.idUser,
-		);
-		const statusCode = result.success
-			? statusCodes.NO_CONTENT
-			: statusCodes.BAD_REQUEST;
+router.delete('/user', async function (req, res) {
+	const result = await favoriteService.deleteAllFromFavoriteList(
+		req.query.token,
+	);
+	const statusCode = result.success
+		? statusCodes.NO_CONTENT
+		: statusCodes.BAD_REQUEST;
 
-		res.status(statusCode).json(result);
-	},
-);
+	res.status(statusCode).json(result);
+});
 
 router.delete('/all', async (req, res) => {
 	const result = await favoriteService.deleteAll();
